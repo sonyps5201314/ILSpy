@@ -35,9 +35,18 @@ namespace ICSharpCode.ILSpy.TreeNodes
 	/// </summary>
 	public sealed class AssemblyReferenceTreeNode : ILSpyTreeNode
 	{
+		private enum LoadState
+		{
+			Unloaded,
+			Loading,
+			Loadded,
+			Failed
+		}
 		readonly MetadataModule module;
 		readonly AssemblyReference r;
 		readonly AssemblyTreeNode parentAssembly;
+		MetadataFile referencedModule;
+		private LoadState state;
 
 		public AssemblyReferenceTreeNode(MetadataModule module, AssemblyReference r, AssemblyTreeNode parentAssembly)
 		{
@@ -53,7 +62,27 @@ namespace ICSharpCode.ILSpy.TreeNodes
 			get { return Language.EscapeName(r.Name) + GetSuffixString(r.Handle); }
 		}
 
-		public override object Icon => ImagesProvider.Assembly;
+		public override object Icon {
+			get {
+				if (state == LoadState.Unloaded)
+				{
+					state = LoadState.Loading;
+					Dispatcher.CurrentDispatcher.BeginInvoke(() => {
+						var resolver = parentAssembly.LoadedAssembly.GetAssemblyResolver(SettingsService.DecompilerSettings.AutoLoadAssemblyReferences);
+						referencedModule = resolver.Resolve(r);
+						state = referencedModule is null
+							? LoadState.Failed
+							: LoadState.Loadded;
+						RaisePropertyChanged(nameof(Icon));
+					}, DispatcherPriority.Background);
+				}
+				return state switch {
+					LoadState.Loadded => Images.Assembly,
+					LoadState.Failed => Images.AssemblyWarning,
+					_ => Images.AssemblyLoading,
+				};
+			}
+		}
 
 		public override bool ShowExpander {
 			get {
@@ -65,7 +94,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
 					// while the list of references is updated causes problems with WPF's ListView rendering.
 					// Moving the assembly resolving out of the "add assembly reference"-loop by using the
 					// dispatcher fixes the issue.
-					Dispatcher.CurrentDispatcher.BeginInvoke((Action)EnsureLazyChildren, DispatcherPriority.Normal);
+					Dispatcher.CurrentDispatcher.BeginInvoke(EnsureLazyChildren, DispatcherPriority.Normal);
 				}
 				return base.ShowExpander;
 			}
