@@ -280,7 +280,7 @@ namespace ICSharpCode.Decompiler.Metadata
 			{
 				case TargetFrameworkIdentifier.NET:
 				case TargetFrameworkIdentifier.NETCoreApp:
-				case TargetFrameworkIdentifier.NETStandard:
+				//case TargetFrameworkIdentifier.NETStandard:
 					if (IsZeroOrAllOnes(targetFrameworkVersion))
 						goto default;
 					file = dotNetCorePathFinder.Value.TryResolveDotNetCore(name);
