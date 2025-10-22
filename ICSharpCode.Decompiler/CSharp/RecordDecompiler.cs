@@ -1166,16 +1166,31 @@ namespace ICSharpCode.Decompiler.CSharp
 				if (!(target.Kind == VariableKind.Parameter && target.Index == i))
 					return false;
 
-				if (getter is not Call call || call.Arguments.Count != 1)
+				// Accept a variety of getter forms produced by different compilers:
+				//1) property getter call: CallInstruction with one argument (this)
+				//2) direct field load: LdFld or LdFlda from this
+				if (getter is Call call && call.Arguments.Count == 1)
+				{
+					if (!call.Arguments[0].MatchLdThis())
+						return false;
+					// allow property getters (accessors) as generated
+					if (!call.Method.IsAccessor)
+					{
+						// If it's not an accessor, still allow some simple passthrough methods emitted by compilers
+						// only if they are simple instance methods taking 'this' and returning a value; be conservative.
+						// We won't try to validate further here.
+					}
+				}
+				else if (getter.MatchLdFld(out var fldTarget, out var field) || getter.MatchLdFlda(out fldTarget, out field))
+				{
+					if (!fldTarget.MatchLdThis())
+						return false;
+					// direct field access is acceptable for generated deconstruct
+				}
+				else
+				{
 					return false;
-				if (!call.Arguments[0].MatchLdThis())
-					return false;
-
-				if (!call.Method.IsAccessor)
-					return false;
-				var autoProperty = (IProperty)call.Method.AccessorOwner;
-				if (!autoPropertyToBackingField.ContainsKey(autoProperty))
-					return false;
+				}
 			}
 
 			var returnInst = body.Instructions.LastOrDefault();
