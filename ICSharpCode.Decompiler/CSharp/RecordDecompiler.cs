@@ -452,6 +452,34 @@ namespace ICSharpCode.Decompiler.CSharp
 			if (!recordTypeDef.IsRecord)
 				return false;
 
+			switch (method.Name)
+			{
+				case "op_Equality":
+				case "op_Inequality":
+				case "Equals":
+				case "GetHashCode":
+				case "<Clone>$":
+				case "PrintMembers":
+				case "ToString":
+				case "Deconstruct":
+				{
+					if (method.GetAttributes().Any(attr => IsAllowedAttribute(attr)))
+						return true;
+
+					var module = method.ParentModule as MetadataModule;
+					var handle = (MethodDefinitionHandle)method.MetadataToken;
+					var metadata = module.metadata;
+					var def = metadata.GetMethodDefinition(handle);
+					var attributes = def.Attributes;
+					const MethodAttributes likeAttributes = MethodAttributes.HideBySig;
+					if ((attributes & likeAttributes) == likeAttributes)
+					{
+						return true;
+					}
+				}
+				break;
+			}
+
 			if (IsCopyConstructor(method))
 			{
 				return IsGeneratedCopyConstructor(method);
