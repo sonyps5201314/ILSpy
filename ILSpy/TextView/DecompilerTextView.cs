@@ -1148,7 +1148,7 @@ namespace ICSharpCode.ILSpy.TextView
 					try
 					{
 						bool originalProjectFormatSetting = context.Options.DecompilerSettings.UseSdkStyleProjectFormat;
-						context.Options.EscapeInvalidIdentifiers = true;
+						//context.Options.EscapeInvalidIdentifiers = true;
 						context.Options.Progress = this;
 						AvalonEditTextOutput output = new AvalonEditTextOutput {
 							EnableHyperlinks = true,

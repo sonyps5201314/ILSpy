@@ -210,7 +210,7 @@ namespace ICSharpCode.Decompiler.CSharp.ProjectDecompiler
 		{
 			var decompiler = new CSharpDecompiler(ts, Settings);
 			decompiler.DebugInfoProvider = DebugInfoProvider;
-			decompiler.AstTransforms.Add(new EscapeInvalidIdentifiers());
+			//decompiler.AstTransforms.Add(new EscapeInvalidIdentifiers());
 			decompiler.AstTransforms.Add(new RemoveCLSCompliantAttribute());
 			return decompiler;
 		}
