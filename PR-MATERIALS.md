@@ -11,7 +11,7 @@ original ILSpy configuration were replaced with placeholders.
 - Previous private baseline: `fe70c814858488a4f7b34cfbd9747d5c5a66e780`
 - Benchmark upstream baseline: `24ec3327e7fa9fcc56159bbbd7cfafdfc3e5ee89`
 - Current upstream PR base: `e930120ade794c5714e12cc4b9d09e5c8f2f9d98`
-- PR head at upload time: `fa6f1ee3f649a7cf82476f69778dbec649e8a1b8`
+- PR head at upload time: `793bced7542ac4bce001473fe285b8749926f94e`
 
 The upstream commits between the benchmark baseline and the current PR base modify bundle,
 resource and LightJson validation. The PR branch was rebased onto the current base without
@@ -35,7 +35,7 @@ Important options:
 
 ## Dataset A: `vs2026`
 
-| Metric | Private | Upstream | PR | PR vs upstream |
+| Metric | [Private](https://github.com/sonyps5201314/ILSpy/tree/fe70c814858488a4f7b34cfbd9747d5c5a66e780) | Upstream | PR | PR vs upstream |
 |---|---:|---:|---:|---:|
 | Generated C# files | 3,402 | 3,399 | 3,398 | -1 |
 | `.ctor` / `_002Ector` artifacts | 24 | 20 | **0** | **-20** |
@@ -54,7 +54,7 @@ syntax diagnostics are both in `Document.cs` and also occur in the upstream outp
 
 ## Dataset B: `Copilot.Conversations.Service_vs2026`
 
-| Metric | Private | Upstream | PR | PR vs upstream |
+| Metric | [Private](https://github.com/sonyps5201314/ILSpy/tree/fe70c814858488a4f7b34cfbd9747d5c5a66e780) | Upstream | PR | PR vs upstream |
 |---|---:|---:|---:|---:|
 | Generated C# files | 5,174 | 5,174 | 5,171 | -3 |
 | `.ctor` / `_002Ector` artifacts | 36 | 30 | **0** | **-30** |
